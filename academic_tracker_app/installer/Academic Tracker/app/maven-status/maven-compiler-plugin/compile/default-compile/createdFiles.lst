@@ -1,0 +1,7 @@
+com\academic_tracker_app\model\Module.class
+module-info.class
+com\academic_tracker_app\controller\MainController.class
+com\academic_tracker_app\Launcher.class
+com\academic_tracker_app\database\ModuleDAO.class
+com\academic_tracker_app\AcademicTrackerApplication.class
+com\academic_tracker_app\database\Database.class
