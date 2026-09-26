@@ -6,6 +6,7 @@ module com.academic_tracker_app.academic_tracker_app {
     requires com.dlsc.formsfx;
     requires org.kordamp.bootstrapfx.core;
     requires java.sql;
+    requires org.xerial.sqlitejdbc;
 
     opens com.academic_tracker_app.controller to javafx.fxml;
     exports com.academic_tracker_app;

@@ -12,7 +12,7 @@ public class Module {
         this.mark = mark;
     }
 
-    /// I don't think one needs to get or set ID, but i'll keep it for now
+    // Database identity ensures updates and deletes target exactly one row.
 
     public int getId() {
         return id;

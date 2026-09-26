@@ -1,51 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="640.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.academic_tracker_app.controller.MainController">
-   <children>
-      <Label layoutX="212.0" layoutY="35.0" text="Academic Tracker">
-         <font>
-            <Font name="System Bold" size="21.0" />
-         </font>
-      </Label>
-      <Label layoutX="54.0" layoutY="73.0" text="Module Information">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Label>
-      <Label layoutX="54.0" layoutY="127.0" text="Module Name" />
-      <Label layoutX="54.0" layoutY="165.0" text="Credits" />
-      <Label layoutX="54.0" layoutY="200.0" text="Mark (%)" />
-      <TextField fx:id="txtModuleName" layoutX="178.0" layoutY="123.0" prefHeight="27.0" prefWidth="260.0" promptText="e.g. Stats" />
-      <TextField fx:id="txtCredits" layoutX="178.0" layoutY="161.0" prefHeight="27.0" prefWidth="71.0" promptText="e.g. 12" />
-      <TextField fx:id="txtMark" layoutX="178.0" layoutY="196.0" prefHeight="27.0" prefWidth="71.0" promptText="e.g. 94" />
-      <Button fx:id="btnAddModule" layoutX="255.0" layoutY="254.0" mnemonicParsing="false" text="Add Module" onAction="#addModule"/>
-      <Separator layoutX="60.0" layoutY="307.0" prefHeight="19.0" prefWidth="486.0" />
-      <Separator layoutX="54.0" layoutY="98.0" prefHeight="19.0" prefWidth="486.0" />
-      <Label layoutX="272.0" layoutY="326.0" text="Modules">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Label>
-      <TableView fx:id="moduleTable" layoutX="58.0" layoutY="364.0" prefHeight="200.0" prefWidth="486.0">
+<VBox spacing="16" prefWidth="700" prefHeight="670" xmlns="http://javafx.com/javafx/21"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.academic_tracker_app.controller.MainController">
+    <padding><Insets top="28" right="32" bottom="24" left="32"/></padding>
+    <Label text="Academic Tracker" style="-fx-font-size: 24; -fx-font-weight: bold;"/>
+    <Label text="Module information" style="-fx-font-size: 16;"/>
+    <GridPane hgap="16" vgap="12">
+        <columnConstraints>
+            <ColumnConstraints minWidth="100"/>
+            <ColumnConstraints hgrow="ALWAYS"/>
+        </columnConstraints>
+        <Label text="Module name" GridPane.rowIndex="0"/>
+        <TextField fx:id="txtModuleName" promptText="e.g. Statistics" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        <Label text="Credits" GridPane.rowIndex="1"/>
+        <TextField fx:id="txtCredits" promptText="e.g. 12" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <Label text="Mark (%)" GridPane.rowIndex="2"/>
+        <TextField fx:id="txtMark" promptText="0 to 100" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+    </GridPane>
+    <HBox spacing="10">
+        <Button fx:id="btnAddModule" text="Add Module" onAction="#addModule"/>
+        <Button fx:id="btnUpdateModule" text="Update Selected" onAction="#updateModule"/>
+        <Button fx:id="btnDeleteModule" text="Delete Selected" onAction="#deleteModule"/>
+        <Button text="New / Clear" onAction="#clearForm"/>
+    </HBox>
+    <Label fx:id="lblStatus" text="Add a module, or select a row to update or delete it." wrapText="true"/>
+    <Separator/>
+    <TableView fx:id="moduleTable" VBox.vgrow="ALWAYS" prefHeight="240">
         <columns>
-          <TableColumn fx:id="moduleColumn" prefWidth="338.0" text="Module" />
-          <TableColumn fx:id="creditsColumn" prefWidth="61.0" text="Credits" />
-            <TableColumn fx:id="markColumn" prefWidth="86.0" text="Mark (%)" />
+            <TableColumn fx:id="moduleColumn" text="Module" prefWidth="410"/>
+            <TableColumn fx:id="creditsColumn" text="Credits" prefWidth="85"/>
+            <TableColumn fx:id="markColumn" text="Mark (%)" prefWidth="100"/>
         </columns>
-      </TableView>
-      <Label layoutX="54.0" layoutY="583.0" text="Weighted Average:">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Label>
-      <Label fx:id="lblAverage" layoutX="53.0" layoutY="615.0" text="0.00%">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Label>
-   </children>
-</AnchorPane>
+    </TableView>
+    <HBox spacing="12" style="-fx-font-size: 18; -fx-font-weight: bold;">
+        <Label text="Weighted average:"/>
+        <Label fx:id="lblAverage" text="0.00%"/>
+    </HBox>
+    <Label fx:id="lblDataLocation" wrapText="true" style="-fx-font-size: 11; -fx-text-fill: #555555;"/>
+</VBox>
