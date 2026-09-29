@@ -5,6 +5,7 @@ public class Module {
     private String moduleName;
     private int credits;
     private double mark;
+    private boolean finalYear;
 
     public Module(String moduleName, int credits, double mark) {
         this.moduleName = moduleName;
@@ -45,6 +46,10 @@ public class Module {
     public void setMark(double mark) {
         this.mark = mark;
     }
+
+    public boolean isFinalYear() { return finalYear; }
+
+    public void setFinalYear(boolean finalYear) { this.finalYear = finalYear; }
 
     @Override
     public String toString() {

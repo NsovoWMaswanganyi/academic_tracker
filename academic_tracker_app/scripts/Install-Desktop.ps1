@@ -15,9 +15,16 @@ New-Item -ItemType Directory -Force $destination | Out-Null
 Copy-Item -Path (Join-Path $ImagePath '*') -Destination $destination -Recurse
 $exe = Join-Path $destination 'Academic Tracker.exe'
 $legacy = Join-Path $root 'grades.db'
-$initialize = Start-Process -FilePath $exe -ArgumentList @('--initialize-data', ('"' + $legacy + '"')) `
+$firstRunSnapshot = Join-Path $destination 'app\first-run-grades.db'
+$initialize = Start-Process -FilePath $exe -ArgumentList @('--initialize-data', ('"' + $legacy + '"'), ('"' + $firstRunSnapshot + '"')) `
     -WorkingDirectory $destination -WindowStyle Hidden -PassThru -Wait
 if ($initialize.ExitCode -ne 0) { throw 'Grades could not be initialized. The original database has been preserved.' }
+if (-not (Test-Path -LiteralPath $firstRunSnapshot)) { throw 'The first-launch grades snapshot was not created.' }
+# First launch must also work in the desktop user's file view, not only the installer process.
+# This private snapshot belongs to this user's installation and is never included in build images.
+# Database migration only uses it if the user's database does not exist.
+Add-Content -LiteralPath (Join-Path $destination 'app\Academic Tracker.cfg') `
+    -Value 'java-options=-Dacademic.tracker.legacyDatabase=$APPDIR\first-run-grades.db'
 $desktop = [Environment]::GetFolderPath('Desktop')
 $startMenu = [Environment]::GetFolderPath('Programs')
 $shell = New-Object -ComObject WScript.Shell

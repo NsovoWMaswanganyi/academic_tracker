@@ -36,10 +36,52 @@ public class Database {
                         mark REAL NOT NULL
                     )
                     """);
+            migrateFinalYear(connection);
             return connection;
         } catch (SQLException e) {
             connection.close();
             throw e;
+        }
+    }
+
+    private static void migrateFinalYear(Connection connection) throws SQLException {
+        try (Statement statement = connection.createStatement();
+             ResultSet columns = statement.executeQuery("PRAGMA table_info(modules)")) {
+            while (columns.next()) {
+                if (columns.getString("name").equals("finalYear")) return;
+            }
+        }
+        // Mark this user's existing group once; later edits/deletes never shift membership.
+        boolean populated;
+        try (Statement statement = connection.createStatement();
+             ResultSet rows = statement.executeQuery("SELECT COUNT(*) FROM modules")) {
+            populated = rows.next() && rows.getInt(1) > 0;
+        }
+        if (populated) {
+            Path backupPath = getDatabasePath().resolveSibling("grades-before-final-year-"
+                    + java.util.UUID.randomUUID() + ".db");
+            try (PreparedStatement backup = connection.prepareStatement("VACUUM INTO ?")) {
+                backup.setString(1, backupPath.toString());
+                backup.execute();
+            }
+        }
+        connection.setAutoCommit(false);
+        try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate("ALTER TABLE modules ADD COLUMN finalYear INTEGER NOT NULL DEFAULT 0");
+            statement.executeUpdate("""
+                    UPDATE modules SET finalYear = 1 WHERE id IN (
+                        SELECT id FROM modules
+                        WHERE id >= (SELECT MIN(id) FROM modules
+                                     WHERE LOWER(TRIM(moduleName)) = 'financial management')
+                        ORDER BY id LIMIT 10
+                    )
+                    """);
+            connection.commit();
+        } catch (SQLException e) {
+            connection.rollback();
+            throw e;
+        } finally {
+            connection.setAutoCommit(true);
         }
     }
 
@@ -55,6 +97,18 @@ public class Database {
             Files.move(backupPath, database);
         } finally {
             Files.deleteIfExists(backupPath);
+        }
+    }
+
+    /** Snapshot for this user's installed launcher; never overwrite an existing backup. */
+    public static void backupTo(Path destination) throws SQLException, IOException {
+        destination = destination.toAbsolutePath();
+        Files.createDirectories(destination.getParent());
+        if (Files.exists(destination)) throw new IOException("Backup already exists: " + destination);
+        try (Connection connection = connect();
+             PreparedStatement backup = connection.prepareStatement("VACUUM INTO ?")) {
+            backup.setString(1, destination.toString());
+            backup.execute();
         }
     }
 }

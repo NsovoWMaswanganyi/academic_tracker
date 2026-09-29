@@ -16,7 +16,7 @@ public class AcademicTrackerApplication extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(AcademicTrackerApplication.class.getResource("/view/main-view.fxml"));
         Scene scene;
         try {
-            scene = new Scene(fxmlLoader.load(), 700, 670);
+            scene = new Scene(fxmlLoader.load(), 700, 760);
         } catch (IOException | RuntimeException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Academic Tracker could not start");
@@ -31,7 +31,7 @@ public class AcademicTrackerApplication extends Application {
         }
         stage.setTitle("Academic Tracker");
         stage.setMinWidth(700);
-        stage.setMinHeight(650);
+        stage.setMinHeight(720);
         var icon = AcademicTrackerApplication.class.getResourceAsStream("/icons/academic-tracker.png");
         if (icon != null) stage.getIcons().add(new Image(icon));
         stage.setScene(scene);

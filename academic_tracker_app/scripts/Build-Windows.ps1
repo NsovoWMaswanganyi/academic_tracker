@@ -16,7 +16,7 @@ try {
     $inputFolder = Join-Path $buildRoot 'input'
     New-Item -ItemType Directory -Force $inputFolder | Out-Null
     Copy-Item -LiteralPath $jar -Destination $inputFolder
-    & $jpackage --type app-image --name 'Academic Tracker' --app-version 1.1.0 `
+    & $jpackage --type app-image --name 'Academic Tracker' --app-version 1.2.0 `
         --vendor 'Academic Tracker' --description 'Track module marks and your weighted average' `
         --input $inputFolder --dest $buildRoot `
         --main-jar 'academic_tracker_app-1.0-SNAPSHOT.jar' `

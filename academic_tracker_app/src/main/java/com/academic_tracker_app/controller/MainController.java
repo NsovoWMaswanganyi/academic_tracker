@@ -3,6 +3,8 @@ package com.academic_tracker_app.controller;
 import com.academic_tracker_app.database.Database;
 import com.academic_tracker_app.database.ModuleDAO;
 import com.academic_tracker_app.model.Module;
+import com.academic_tracker_app.model.GradeAverages;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -14,6 +16,7 @@ public class MainController {
     @FXML public TextField txtModuleName;
     @FXML public TextField txtCredits;
     @FXML public TextField txtMark;
+    @FXML public CheckBox chkFinalYear;
     @FXML public Button btnAddModule;
     @FXML public Button btnUpdateModule;
     @FXML public Button btnDeleteModule;
@@ -21,7 +24,10 @@ public class MainController {
     @FXML public TableColumn<Module, String> moduleColumn;
     @FXML public TableColumn<Module, Integer> creditsColumn;
     @FXML public TableColumn<Module, Double> markColumn;
+    @FXML public TableColumn<Module, String> finalYearColumn;
     @FXML public Label lblAverage;
+    @FXML public Label lblFinalYearAverage;
+    @FXML public Label lblFinalYearDetails;
     @FXML public Label lblStatus;
     @FXML public Label lblDataLocation;
 
@@ -33,6 +39,7 @@ public class MainController {
         moduleColumn.setCellValueFactory(new PropertyValueFactory<>("moduleName"));
         creditsColumn.setCellValueFactory(new PropertyValueFactory<>("credits"));
         markColumn.setCellValueFactory(new PropertyValueFactory<>("mark"));
+        finalYearColumn.setCellValueFactory(cell -> new ReadOnlyStringWrapper(cell.getValue().isFinalYear() ? "Yes" : ""));
         moduleTable.setItems(modules);
         moduleTable.setPlaceholder(new Label("Add a module to start tracking your grades."));
         btnUpdateModule.disableProperty().bind(moduleTable.getSelectionModel().selectedItemProperty().isNull());
@@ -43,6 +50,7 @@ public class MainController {
                 txtModuleName.setText(selected.getModuleName());
                 txtCredits.setText(Integer.toString(selected.getCredits()));
                 txtMark.setText(Double.toString(selected.getMark()));
+                chkFinalYear.setSelected(selected.isFinalYear());
                 lblStatus.setText("Editing selected module. Save changes or choose New / Clear.");
             }
         });
@@ -63,6 +71,7 @@ public class MainController {
         if (updating && selected == null) return;
         try {
             Module module = readInput(txtModuleName.getText(), txtCredits.getText(), txtMark.getText());
+            module.setFinalYear(chkFinalYear.isSelected());
             if (updating) {
                 module.setId(selected.getId());
                 moduleDAO.updateModule(module);
@@ -122,19 +131,22 @@ public class MainController {
         txtModuleName.clear();
         txtCredits.clear();
         txtMark.clear();
+        chkFinalYear.setSelected(false);
         lblStatus.setText("Add a module, or select a row to update or delete it.");
         txtModuleName.requestFocus();
     }
 
     private void refresh() throws SQLException {
         modules.setAll(moduleDAO.getModules());
-        double weightedTotal = 0;
-        long totalCredits = 0;
-        for (Module module : modules) {
-            weightedTotal += module.getMark() * module.getCredits();
-            totalCredits += module.getCredits();
-        }
-        lblAverage.setText(String.format("%.2f%%", totalCredits > 0 ? weightedTotal / totalCredits : 0));
+        var overall = GradeAverages.summarize(modules, false);
+        var finalYear = GradeAverages.summarize(modules, true);
+        lblAverage.setText(String.format("%.2f%%", overall.average()));
+        lblFinalYearAverage.setText(finalYear.credits() > 0 ? String.format("%.2f%%", finalYear.average()) : "—");
+        lblFinalYearDetails.setText(finalYear.moduleCount() == 0
+                ? "Select a module and tick Final-year module to include it."
+                : String.format("%d final-year %s · %d credits", finalYear.moduleCount(),
+                        finalYear.moduleCount() == 1 ? "module" : "modules", finalYear.credits()));
+        lblFinalYearAverage.setTooltip(new Tooltip("Sum of (mark × credits) ÷ total final-year credits"));
     }
 
     private void showError(String title, String message) {

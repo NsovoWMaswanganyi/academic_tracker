@@ -9,7 +9,7 @@ public class ModuleDAO {
     public void addModule(Module module) throws SQLException {
         try (Connection connection = Database.connect();
              PreparedStatement statement = connection.prepareStatement(
-                     "INSERT INTO modules(moduleName, credits, mark) VALUES(?,?,?)")) {
+                     "INSERT INTO modules(moduleName, credits, mark, finalYear) VALUES(?,?,?,?)")) {
             setValues(statement, module);
             statement.executeUpdate();
         }
@@ -18,9 +18,9 @@ public class ModuleDAO {
     public void updateModule(Module module) throws SQLException {
         try (Connection connection = Database.connect();
              PreparedStatement statement = connection.prepareStatement(
-                     "UPDATE modules SET moduleName=?, credits=?, mark=? WHERE id=?")) {
+                     "UPDATE modules SET moduleName=?, credits=?, mark=?, finalYear=? WHERE id=?")) {
             setValues(statement, module);
-            statement.setInt(4, module.getId());
+            statement.setInt(5, module.getId());
             requireExisting(statement.executeUpdate());
         }
     }
@@ -37,6 +37,7 @@ public class ModuleDAO {
         statement.setString(1, module.getModuleName());
         statement.setInt(2, module.getCredits());
         statement.setDouble(3, module.getMark());
+        statement.setBoolean(4, module.isFinalYear());
     }
 
     private void requireExisting(int count) throws SQLException {
@@ -51,6 +52,7 @@ public class ModuleDAO {
             while (rows.next()) {
                 Module module = new Module(rows.getString("moduleName"), rows.getInt("credits"), rows.getDouble("mark"));
                 module.setId(rows.getInt("id"));
+                module.setFinalYear(rows.getBoolean("finalYear"));
                 modules.add(module);
             }
         }

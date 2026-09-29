@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox spacing="16" prefWidth="700" prefHeight="670" xmlns="http://javafx.com/javafx/21"
+<VBox spacing="12" prefWidth="700" prefHeight="760" xmlns="http://javafx.com/javafx/21"
       xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.academic_tracker_app.controller.MainController">
     <padding><Insets top="28" right="32" bottom="24" left="32"/></padding>
     <Label text="Academic Tracker" style="-fx-font-size: 24; -fx-font-weight: bold;"/>
@@ -19,6 +19,7 @@
         <TextField fx:id="txtCredits" promptText="e.g. 12" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
         <Label text="Mark (%)" GridPane.rowIndex="2"/>
         <TextField fx:id="txtMark" promptText="0 to 100" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <CheckBox fx:id="chkFinalYear" text="Final-year module" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
     </GridPane>
     <HBox spacing="10">
         <Button fx:id="btnAddModule" text="Add Module" onAction="#addModule"/>
@@ -30,14 +31,22 @@
     <Separator/>
     <TableView fx:id="moduleTable" VBox.vgrow="ALWAYS" prefHeight="240">
         <columns>
-            <TableColumn fx:id="moduleColumn" text="Module" prefWidth="410"/>
+            <TableColumn fx:id="moduleColumn" text="Module" prefWidth="325"/>
             <TableColumn fx:id="creditsColumn" text="Credits" prefWidth="85"/>
-            <TableColumn fx:id="markColumn" text="Mark (%)" prefWidth="100"/>
+            <TableColumn fx:id="markColumn" text="Mark (%)" prefWidth="90"/>
+            <TableColumn fx:id="finalYearColumn" text="Final year" prefWidth="95"/>
         </columns>
     </TableView>
-    <HBox spacing="12" style="-fx-font-size: 18; -fx-font-weight: bold;">
-        <Label text="Weighted average:"/>
-        <Label fx:id="lblAverage" text="0.00%"/>
-    </HBox>
+    <VBox spacing="6">
+        <HBox spacing="12" style="-fx-font-size: 16;">
+            <Label text="Overall weighted average:"/>
+            <Label fx:id="lblAverage" text="0.00%"/>
+        </HBox>
+        <HBox spacing="12" style="-fx-font-size: 18; -fx-font-weight: bold;">
+            <Label text="Final-year weighted average:"/>
+            <Label fx:id="lblFinalYearAverage" text="—"/>
+        </HBox>
+        <Label fx:id="lblFinalYearDetails" wrapText="true" style="-fx-text-fill: #555555;"/>
+    </VBox>
     <Label fx:id="lblDataLocation" wrapText="true" style="-fx-font-size: 11; -fx-text-fill: #555555;"/>
 </VBox>
